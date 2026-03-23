@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu as MenuIcon, X, Star, MapPin, Phone, Clock, Instagram, Facebook, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 
 // --- DATA ---
 
@@ -104,6 +104,27 @@ export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroScrollY } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  const heroBackgroundY = useTransform(heroScrollY, [0, 1], ["0%", "40%"]);
+
+  const aboutRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: aboutScrollY } = useScroll({
+    target: aboutRef,
+    offset: ["start end", "end start"]
+  });
+  const aboutImageY = useTransform(aboutScrollY, [0, 1], ["-10%", "10%"]);
+
+  const reservaRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: reservaScrollY } = useScroll({
+    target: reservaRef,
+    offset: ["start end", "end start"]
+  });
+  const reservaBackgroundY = useTransform(reservaScrollY, [0, 1], ["-20%", "20%"]);
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
@@ -176,8 +197,8 @@ export default function App() {
       </nav>
 
       {/* HERO */}
-      <section id="inicio" className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
+      <section id="inicio" ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden">
+        <motion.div style={{ y: heroBackgroundY }} className="absolute inset-0 z-0 h-[120%] -top-[10%]">
           <img 
             src="https://res.cloudinary.com/dfbsqy5ul/image/upload/v1774280334/Celebraci%C3%B3n_cumple_en_el_mejor_sitio_z0zv1n.jpg" 
             alt="Interior acogedor de Retrogusto" 
@@ -185,7 +206,7 @@ export default function App() {
             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-black/70"></div>
-        </div>
+        </motion.div>
         
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto mt-16">
           <motion.h1 
@@ -224,7 +245,7 @@ export default function App() {
       </section>
 
       {/* SOBRE NOSOTROS */}
-      <section id="nosotros" className="py-24 px-6 bg-retro-alt">
+      <section id="nosotros" ref={aboutRef} className="py-24 px-6 bg-retro-alt overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <FadeIn className="order-2 lg:order-1">
@@ -247,7 +268,8 @@ export default function App() {
             <FadeIn delay={0.2} className="order-1 lg:order-2">
               <div className="relative">
                 <div className="absolute inset-0 border-2 border-retro-gold translate-x-4 translate-y-4 z-0"></div>
-                <img 
+                <motion.img 
+                  style={{ y: aboutImageY }}
                   src="https://res.cloudinary.com/dfbsqy5ul/image/upload/v1774280334/Retrogusto_Llanes_Asturias_Paraisogastro_nomico._fzkyjq.jpg" 
                   alt="Plato emblemático de Retrogusto" 
                   className="relative z-10 w-full h-[400px] lg:h-[600px] object-cover shadow-2xl"
@@ -403,8 +425,14 @@ export default function App() {
       </section>
 
       {/* RESERVA CTA */}
-      <section id="reserva" className="py-32 px-6 bg-retro-alt text-center border-y border-retro-gold/20">
-        <div className="max-w-3xl mx-auto">
+      <section id="reserva" ref={reservaRef} className="relative py-32 px-6 bg-retro-alt text-center border-y border-retro-gold/20 overflow-hidden">
+        <motion.div 
+          style={{ y: reservaBackgroundY }} 
+          className="absolute inset-0 z-0 opacity-5 pointer-events-none"
+        >
+          <div className="w-full h-[150%] bg-[radial-gradient(circle_at_center,_var(--color-retro-gold)_0%,_transparent_50%)] -top-[25%] relative"></div>
+        </motion.div>
+        <div className="max-w-3xl mx-auto relative z-10">
           <Phone className="w-12 h-12 text-retro-gold mx-auto mb-6" />
           <h2 className="font-title text-4xl md:text-6xl text-retro-gold mb-6">Reserva tu mesa</h2>
           <p className="font-title italic text-xl md:text-2xl text-retro-text/90 mb-6">
